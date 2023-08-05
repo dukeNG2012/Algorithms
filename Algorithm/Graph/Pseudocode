@@ -1,0 +1,29 @@
+class graph:
+    private int V;
+    private List<List<Integer>> adj;
+
+    graph(int v):
+        this.V = v;
+        adj = new ArrayList<>(V);
+        for i:= 0 -> V:
+            adj.add(new LinkedList<>());
+        end
+
+        void addEdge(int src, int dest):
+            adj.get(src).add(dest)
+        public boolean IsCycleUtil(int s, boolean[] visited, boolean[] ReStack):
+            // vi tri cac dieu kien la vo cung quan trong!
+            if(ReStack[s])
+                return true;
+            if(visited[s])
+                return false;
+            visited[s] = true;
+            ReStack[s] = true;
+            List<Integer> Children = adj.get(s)
+            for (Integer c : Children):
+                if(iscycleUtil(c,visited,ReStack))
+                    return true
+            
+            // Khi 1 node khong co con nao nua thi no se false den tan goc!
+            ReStack[s] = false;
+            return false
