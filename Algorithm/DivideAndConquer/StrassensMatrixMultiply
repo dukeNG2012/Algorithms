@@ -1,0 +1,176 @@
+/*
+ * 
+ * Tóm lại phương pháp này là chỉ cần nhớ:
+ * Công thức strassen
+ * Sự khác biệt giữa hàm split và hàm join
+ * 
+ * 
+ */
+public class StrassensMatrixMultiply
+{
+    static int[][] add(int[][] A, int [][] B)
+    {
+        int n = A.length;
+        int[][] c = new int [n][n];
+        for (int i = 0; i < n; ++i)
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                c[i][j] = A[i][j] + B[i][j];
+            }
+        }
+        return c;
+    }
+    static int[][] sub(int[][] A, int [][] B)
+    {
+        int n = A.length;
+        int[][] c = new int [n][n];
+        for (int i = 0; i < n; ++i)
+        {
+            for(int j = 0; j < n; ++j)
+            {
+                c[i][j] = A[i][j] - B[i][j];
+            }
+        }
+        return c;
+    }
+    static int[][] split(int[][] BaseMatrix, int [][] NewMatrix, int RowNewMatrix, int ColumnNewMatrix)
+    {
+        int n = NewMatrix.length;
+        for(int i1 = 0, i2 = RowNewMatrix;i1 < n; ++i1, ++i2 )
+        {
+            for(int j1 = 0, j2 = ColumnNewMatrix; j1 < n; ++j1, ++j2)
+            {
+                NewMatrix[i1][j1] = BaseMatrix[i2][j2];
+            }
+        }
+        return NewMatrix;
+    }
+    //! tôi từng có bug ở đây vì base matrix lúc này
+    //! nhận giá trị của C[][] và nó sẽ phải được gán vào ma trận
+    //! result matrix của tôi theo số thứ tự của newmatrix chứ không
+    //! phải số thứ tự của C[][]
+    static int[][] join(int[][] BaseMatrix, int [][] NewMatrix, int RowNewMatrix, int ColumnNewMatrix)
+    {
+        int n = BaseMatrix.length;
+        for(int i1 = 0, i2 = RowNewMatrix;i1 < n; ++i1, ++i2 )
+        {
+            for(int j1 = 0, j2 = ColumnNewMatrix; j1 < n; ++j1, ++j2)
+            {
+                NewMatrix[i2][j2] = BaseMatrix[i1][j1];
+            }
+        }
+        return NewMatrix;
+    }
+    static int[][] StrassenTechnique(int[][] A, int[][] B)
+    {
+        int n = A.length;
+        int[][] ResultMatrix = new int[n][n];
+        // base case:
+        if(n == 1)
+        {
+            ResultMatrix[0][0] = A[0][0]*B[0][0];
+            //return ResultMatrix;
+        }
+        else
+        {
+            // cấp phát động và phân tách từng ma trận nhỏ
+            int[][] A00 = new int[n/2][n/2];
+            int[][] A01 = new int[n/2][n/2];
+            int[][] A10 = new int[n/2][n/2];
+            int[][] A11 = new int[n/2][n/2];
+            int[][] B00 = new int[n/2][n/2];
+            int[][] B01 = new int[n/2][n/2];
+            int[][] B10 = new int[n/2][n/2];
+            int[][] B11 = new int[n/2][n/2];
+
+                // chia tach
+                split(A, A00, 0, 0);
+                split(A, A01, 0, n/2);
+                split(A, A10, n/2, 0);
+                split(A, A11, n/2, n/2);
+                split(B, B00, 0, 0);
+                split(B, B01, 0, n/2);
+                split(B, B10, n/2, 0);
+                split(B, B11, n/2, n/2);
+
+            // Sử dụng công thức Strassen:
+            /**
+              M1 = (A11 + A22)(B11 + B22)
+              M2 = (A21 + A22) B11
+              M3 = A11 (B12 - B22)
+              M4 = A22 (B21 - B11)
+              M5 = (A11 + A12) B22
+              M6 = (A21 - A11) (B11 + B12)
+              M7 = (A12 - A22) (B21 + B22)
+            **/
+            int[][] M1 = StrassenTechnique(add(A00, A11), add(B00,B11));
+            int[][] M2 = StrassenTechnique(add(A10,A11), B00);
+            int [][]M3 = StrassenTechnique(A00, sub(B01,B11));
+            int [][] M4 = StrassenTechnique(A11, sub(B10,B00));
+            int[][] M5 = StrassenTechnique(add(A00,A01), B11);
+            int[][] M6 = StrassenTechnique(sub(A10,A00), add(B00,B01));
+            int[][] M7 = StrassenTechnique(sub(A01,A11), add(B10,B11));
+
+            // result element matrix:
+            /**
+              C11 = M1 + M4 - M5 + M7
+              C12 = M3 + M5
+              C21 = M2 + M4
+              C22 = M1 - M2 + M3 + M6
+            **/
+            int [][] C11 = add(sub(add(M1, M4), M5), M7);
+            int [][] C12 = add(M3, M5);
+            int [][] C21 = add(M2, M4);
+            int [][] C22 = add(sub(add(M1, M3), M2), M6);
+            
+            // after that merge the result:
+            join(C11, ResultMatrix, 0 , 0);
+            join(C12, ResultMatrix, 0 , n/2);
+            join(C21, ResultMatrix, n/2, 0);
+            join(C22, ResultMatrix, n/2, n/2);
+        }
+        return ResultMatrix;
+    }
+    public static void main(String[] args)
+    {
+        int N = 4;
+        /** Accept two 2d matrices **/
+         
+        int[][] A =     { { 1, 1, 1, 1 },
+                        { 2, 2, 2, 2 },
+                        { 3, 3, 3, 3 },
+                        { 2, 2, 2, 2 } };
+ 
+        int[][] B =     { { 1, 1, 1, 1 },
+                        { 2, 2, 2, 2 },
+                        { 3, 3, 3, 3 },
+                        { 2, 2, 2, 2 } };
+        System.out.println("\nArray A =>");
+     
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+                System.out.print(A[i][j] +" ");
+            System.out.println();
+        }
+         
+        System.out.println("\nArray B =>");
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+                System.out.print(B[i][j] +" ");
+            System.out.println();
+        }
+  
+        int[][] C = StrassenTechnique(A, B);
+  
+        System.out.println("\nProduct of matrices A and  B : ");
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+                System.out.print(C[i][j] +" ");
+            System.out.println();
+        }
+    }
+}
