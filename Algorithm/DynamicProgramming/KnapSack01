@@ -1,0 +1,47 @@
+Vấn đề ở đây là: bạn là 1 tên trộm, có túi của bạn chỉ đựng được TrongLuongMax. 
+Trong nhà thằng bạn của bạn có: SoLuongDoVat là số đồ vật max, mỗi đồ vật có mảng int[] GiaTriTungVat, int[] TrongLuongTungVat
+Nhiệm vụ là nhiều đồ có giá trị nhất trong nhà.
+
+
+public class Knapsack {
+
+    static int FindMax(int a, int b)
+    {
+        return a>b ? a:b;
+    }
+    static int KnapsackSolve(int TrongLuongMax, int SoLuongDoVat, int[] GiaTriTungVat, int[] TrongLuongTungVat)
+    {
+
+        int[][] DP = new int[SoLuongDoVat+1][TrongLuongMax+1];
+
+        for(int i = 0; i <= SoLuongDoVat; i++)
+        {
+            for(int j = 0; j <= TrongLuongMax; j++)
+            {
+                DP[i][j] = 0;
+            }
+        }
+        for(int i = 1; i <= SoLuongDoVat; i++)
+        {
+            for(int j = 1; j <= TrongLuongMax; j++)
+            {
+                // khi khong dua do vat vao trong tui:
+                DP[i][j] = DP[i-1][j];
+                if(j >= TrongLuongTungVat[i])
+                {
+                    DP[i][j] = FindMax(DP[i][j], DP[i-1][j-TrongLuongTungVat[i]] + GiaTriTungVat[i]);
+                }
+                
+            }
+        }
+        return DP[SoLuongDoVat][TrongLuongMax];
+    }
+    public static void main(String[] args)
+    {
+        int TrongLuongToiDa = 6;
+        int SoLuongDoVat = 4;
+        int[] GiaTriTungVat = {0,3,3,4,2};
+        int[] TrongLuongTungVat = {0,2,1,4,3};
+        System.out.println(KnapsackSolve(TrongLuongToiDa, SoLuongDoVat, GiaTriTungVat, TrongLuongTungVat));
+    }
+}
