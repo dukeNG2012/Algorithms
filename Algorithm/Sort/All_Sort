@@ -1,0 +1,122 @@
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class AllSortandTimeComplex {
+    static void Swap(int[] arr,int a, int b)
+    {
+        int temp = arr[a] ;
+        arr[a] = arr[b];
+        arr[b] = temp;
+    }
+    static void Selectionsort(int arr[], int n)
+    {
+        for(int i = 0; i < n; ++i)
+        {
+            int min = i;
+            for(int j = i + 1; j < n; ++j)
+            {
+                if(arr[j] < arr[min])
+                {
+                    min = j;
+                }
+            }
+            Swap(arr,i,min);
+        }
+    }
+    static void InsertionSort(int arr[], int n)
+    {
+        for(int i = 2; i < n; ++i)
+        {
+            int temp = arr[i];
+            int j = i-1;
+            while(j > 0 && temp < arr[j])
+            {
+                arr[j+1] = arr[j];
+                j--;
+            }
+            arr[j+1] = temp;
+        }
+        
+    }
+    static int Partition(int[] arr, int low, int high)
+    {
+        int pivot = arr[high];
+        int j = low-1;
+        for(int i = low; i <= high-1; ++i)
+        {
+            if(arr[i] < pivot)
+            {
+                j++;
+                Swap(arr, j, i);
+            }
+        }
+        Swap(arr,j+1,high);
+        return (j+1);
+    }
+    static void Heapify(int arr[], int n, int i)
+    {
+        int left = 2*i+1;
+        int right = 2*i+2;
+        int largest = i;
+        if(left < n && arr[left] > arr[largest])
+        {
+            largest = left;
+        }
+        if(right < n && arr[right] > arr[largest])
+        {
+            largest = right;
+        }
+        if(largest != i)
+        {
+            Swap(arr, i, largest);
+            Heapify(arr, n, largest);
+        }
+    }
+    static void HeapSort(int arr[], int n)
+    {
+        for(int i = (n-1)/2; i >= 0; i--)
+        {
+            Heapify(arr, n, i);
+        }
+        for (int i = n - 1; i > 0; i--) {
+            // Move current root to end
+            Swap(arr, 0, i);
+ 
+            
+            Heapify(arr, i, 0);
+        }
+    }
+    static void QuickSort(int[] arr, int low,int high)
+    {
+        if(low >= high)
+        {
+            return;
+        }
+        int pivot = Partition(arr, low, high);
+        QuickSort(arr, low, pivot-1);
+        QuickSort(arr, pivot+1, high);
+    }
+    static void Print(int[] arr,int n)
+    {
+        for(int i=0; i < n; ++i)
+        {
+            System.out.print(arr[i] + "  ");
+        }
+    }
+    public static void main(String[] args)
+    {
+        int arr[] = {1,2,3,6,31,2,4,7,9,6,4,32,6,8,235,458,2345,7};
+        int n = arr.length;
+        long start = System.nanoTime();
+        //Selectionsort(arr, n);
+        //InsertionSort(arr, n);
+        //QuickSort(arr, 0, n-1);
+        HeapSort(arr,n);
+        long end = System.nanoTime();
+        Print(arr,n);
+        System.out.println("Time COmplexity: " + (end-start));
+        
+
+    }
+}
