@@ -1,78 +1,84 @@
-// Java program to insert element in binary tree
 import java.util.LinkedList;
 import java.util.Queue;
-public class GFG {
 
-	/* A binary tree node has key, pointer to
-	left child and a pointer to right child */
-	static class Node {
-		int key;
-		Node left, right;
+import javax.management.Query;
 
-		// constructor
-		Node(int key)
-		{
-			this.key = key;
-			left = null;
-			right = null;
-		}
-	}
-	static Node root;
-	static Node temp = root;
+public class test1
+{
+    static class node
+    {
+        int key;
+        node right, left;
+        node(int data)
+        {
+            this.key = data;
+            right = null;
+            left = null;
+        }
+        
+    }
+    static node root;
+    static node temp = root;
+    static void inorder(node root)
+    {
+        if(root == null)
+        {
+            return;
+        }
+        inorder(root.left);
+        System.out.print(root.key + "  ");
+        
+        inorder(root.right);
+    }
+    static void insert(node temp, int key)
+    {
+        if(temp == null)
+        {
+            root = new node(key);
+            return;
+        }
+        //! sử dụng queue ở đây để represent data có trong root
+        Queue<node> q = new LinkedList<node>();
 
-	/* Inorder traversal of a binary tree*/
-	static void inorder(Node temp)
-	{
-		if (temp == null)
-			return;
+        //! add vào, print từng data trong root rồi remove dần theo queue
+        q.add(root);
 
-		inorder(temp.left);
-		System.out.print(temp.key + " ");
-		inorder(temp.right);
-	}
-
-	/*function to insert element in binary tree */
-	static void insert(Node temp, int key)
-	{
-
-		if (temp == null) {
-			root = new Node(key);
-			return;
-		}
-		Queue<Node> q = new LinkedList<Node>();
-		q.add(temp);
-
-		// Do level order traversal until we find
-		// an empty place.
-		while (!q.isEmpty()) {
-			temp = q.peek();
-			q.remove();
-
-			if (temp.left == null) {
-				temp.left = new Node(key);
-				break;
-			}
-			else
-				q.add(temp.left);
-
-			if (temp.right == null) {
-				temp.right = new Node(key);
-				break;
-			}
-			else
-				q.add(temp.right);
-		}
-	}
-
-	// Driver code
-	public static void main(String args[])
-	{
-		root = new Node(10);
-		root.left = new Node(11);
-		root.left.left = new Node(7);
-		root.right = new Node(9);
-		root.right.left = new Node(15);
-		root.right.right = new Node(8);
+        while(!q.isEmpty())
+        {
+            temp = q.peek();// check 
+            // đầu của queue
+            q.remove(); // xóa phần đầu
+            if(temp.left == null)
+            {
+                temp.left = new node(key);
+                break;
+            }
+            else
+            {
+                q.add(temp.left);
+            }
+                
+            if(temp.right == null)
+            {
+                temp.right = new node(key);
+                break;
+            }
+            else
+            {
+                q.add(temp.right);
+            }
+                
+            
+        }
+    }
+    public static void main(String[] args)
+    {
+        root = new node(10);
+		root.left = new node(11);
+		root.left.left = new node(7);
+		root.right = new node(9);
+		root.right.left = new node(15);
+		root.right.right = new node(8);
 
 		System.out.print(
 			"Inorder traversal before insertion:");
@@ -84,6 +90,5 @@ public class GFG {
 		System.out.print(
 			"\nInorder traversal after insertion:");
 		inorder(root);
-	}
+    }
 }
-// This code is contributed by Sumit Ghosh
